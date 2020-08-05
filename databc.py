@@ -20,6 +20,7 @@ for traf in traffic:
     c.execute('insert into test1 values (?,?)', data)
 
     i=i+1
+print("done")
 conn.commit()
 c.close()
 
