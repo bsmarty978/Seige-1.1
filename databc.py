@@ -24,15 +24,3 @@ print("done")
 #for github 
 conn.commit()
 c.close()
-
-# foo = traffic[0]["title"]
-# bar = traffic[0]["result"]
-
-# data = [foo, bar]
-
-# c = conn.cursor()
-# c.execute('create table testyyy (foo, bar)')
-# c.execute('insert into testyyy values (?,?)', data)
-
-# conn.commit()
-# c.close()
