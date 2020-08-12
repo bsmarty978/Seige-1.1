@@ -10,7 +10,7 @@ conn = sqlite3.connect(DB_FILE)
 
 #print(type(traffic))
 c = conn.cursor()
-c.execute('create table test1 (foo, bar)')
+c.execute('create table test1 (title, result)')
 i=0
 for traf in traffic:
     foo = traffic[i]["title"]
@@ -24,3 +24,4 @@ print("done")
 #for github 
 conn.commit()
 c.close()
+conn.close
