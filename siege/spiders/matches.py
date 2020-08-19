@@ -65,7 +65,7 @@ class MatchesSpider(CrawlSpider):
             'country' : response.xpath("normalize-space(//span[@class='mr-1']/text())").get(),
             'roster' : {
                 team1 : response.xpath("//div[@class='col-12 col-md match__roster team--a']//h5/text()").getall(),
-                  team2 : response.xpath("//div[@class='col-12 col-md match__roster team--b']//h5/text()").getall()
+                team2 : response.xpath("//div[@class='col-12 col-md match__roster team--b']//h5/text()").getall()
             },
             'stats': stat_list
         }
