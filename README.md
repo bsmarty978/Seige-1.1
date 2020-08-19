@@ -12,4 +12,9 @@
 * upcoming match *`data from matches organized by ubisoft's rainbow six siege`*
 * finshed match data metadata,  roster, players stats, scoreboard
 
-**GG**
+> Contact
+
+* email : bsmarty978@gmail.com
+* instagram : [chevi](https://www.instagram.com/_chevi._/) , [nameless._.gaming](https://www.instagram.com/nameless._.gaming/)
+
+# GG 🚀️ ~~~~
