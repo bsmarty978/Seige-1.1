@@ -1,3 +1,5 @@
 
 new.json
-siege/__pycache__/
+# upcomingm.cpython-38.pyc
+# matches.cpython-38.pyc
+__pycache__
