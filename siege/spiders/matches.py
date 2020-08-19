@@ -33,7 +33,8 @@ class MatchesSpider(CrawlSpider):
         #stats_cond = response.xpath("normalize-space(//div[@class='alert alert-default small']/text())").get()
         #(//h2[@class = 'mb-0']/following-sibling::node())[2] --  player stats emtpy direct 
         stats_cond = response.xpath("normalize-space(//div[@class='row row--padded match__player-stats']/div/div/text())").get() # this condition checks in player stasts table for No player stats data string
-        stat_dict = {}   #empty string to store every player stats
+        stat_dict = {}
+        stat_list = []   #empty string to store every player stats
         if stats_cond != 'No player stats data available.':  #loop to intrate through every player make dict of each
             for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats js-dt--player-stats js-heatmap  w-100']//tbody/tr"):
                 player_name = player.xpath("normalize-space((.//td[@class = 'team--a sp__player js-heatmap-ignore']/text())[position() mod 2 != 1 and position() > 1])").get() 
@@ -49,7 +50,8 @@ class MatchesSpider(CrawlSpider):
                     'plant': player.xpath("normalize-space(.//td[@class='sp__plant']/text())").get(),
                     'hs': player.xpath("normalize-space(.//td[@class='sp__hs']/text())").get(),
                 }
-                stat_dict.update({player_name:dic})
+                #stat_dict.update({player_name:dic}) # it stores stats as key value dict like player name : stats
+                stat_list.append(dic)                #this approch it make a list of players stats dict
         else: #if no stats data available
             stat_dict = stats_cond
 
@@ -65,6 +67,6 @@ class MatchesSpider(CrawlSpider):
                 team1 : response.xpath("//div[@class='col-12 col-md match__roster team--a']//h5/text()").getall(),
                   team2 : response.xpath("//div[@class='col-12 col-md match__roster team--b']//h5/text()").getall()
             },
-            'stats': stat_dict
+            'stats': stat_list
         }
 
