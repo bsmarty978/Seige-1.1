@@ -1,4 +1,4 @@
-# Seige-1.1🎉️
+# Seige-1.1🎮🎉
 
 > Siege web scrapping project to collect ESL match data for rainbow six siege
 
@@ -17,4 +17,4 @@
 * email : bsmarty978@gmail.com
 * instagram : [chevi](https://www.instagram.com/_chevi._/) , [nameless._.gaming](https://www.instagram.com/nameless._.gaming/)
 
-# GG 🚀️ ~~~~
+# GG 🕹 🎮~~~~
