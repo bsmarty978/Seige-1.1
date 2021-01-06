@@ -1,5 +1,6 @@
 
 new.json
-__pycache__
+__pycache__/
 hh.txt
 raw.html
+.vscode/

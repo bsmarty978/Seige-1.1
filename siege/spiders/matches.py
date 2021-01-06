@@ -59,6 +59,9 @@ class MatchesSpider(CrawlSpider):
         yield{
             'title': team1 + ' vs ' +  team2,
             'title_result': team1 + ' ' + result_1 + ' vs ' + result_2 + ' ' + team2,
+            'team_a': team1,
+            'team_b': team2,
+            'game' : "Rainbow Six Siege",
             'result': result_1 + ' ' + result_2,
             'competation' : response.xpath("normalize-space(//span[@class='meta__item meta__competition']/a/text())").get(),
             'time' : response.xpath("normalize-space(//div[@class='entry__meta']/time/text())").get(),
