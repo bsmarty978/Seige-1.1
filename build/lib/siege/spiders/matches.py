@@ -16,7 +16,7 @@ class MatchesSpider(CrawlSpider):
 
     rules = (
         Rule(LinkExtractor(restrict_xpaths="//div[@id='results']/a"), callback='parse_item', follow=True, process_request='set_user_agent'), #for every match
-        # Rule(LinkExtractor(restrict_xpaths="//a[@rel='next']"), process_request='set_user_agent'),    #for next page
+        Rule(LinkExtractor(restrict_xpaths="//a[@rel='next']"), process_request='set_user_agent'),    #for next page
     )
 
     def set_user_agent(self, request):

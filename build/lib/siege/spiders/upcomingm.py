@@ -23,8 +23,8 @@ class UpcomingmSpider(CrawlSpider):
     def parse_item(self, response):
         team1 = response.xpath("normalize-space(//div[@class='h1 pg-title impact__title mb-3']/text())").get() #team 1 data left side
         team2 = response.xpath("normalize-space(//div[@class='h1 pg-title impact__title mb-3']/text()[2])").get() #team2 data rigt side
-        team1_flag = response.xpath("(//div[@class='match__overview-lower rounded overflow-hidden'])[1]//img/@src").get()
-        team2_flag = response.xpath("(//div[@class='match__overview-lower rounded overflow-hidden'])[2]//img/@src").get()
+        team1_flag = response.xpath("(//div[@class='match__overview-lower']//img)[1]/@src").get()
+        team2_flag = response.xpath("(//div[@class='match__overview-lower']//img)[2]/@src").get()
         result_1 = response.xpath("normalize-space((//div[@class='match__overview-lower'])[1]/div/text())").get() #left 
         result_2 = response.xpath("normalize-space((//div[@class='match__overview-lower'])[2]/div/text())").get() #right
         photos = {}
