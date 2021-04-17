@@ -1,6 +1,9 @@
 import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
+
+from scrapy.crawler import CrawlerProcess
+
 class UpcomingmSpider(CrawlSpider):
     name = 'upcomingm'
     allowed_domains = ['siege.gg']
@@ -23,6 +26,8 @@ class UpcomingmSpider(CrawlSpider):
     def parse_item(self, response):
         team1 = response.xpath("normalize-space(//div[@class='h1 pg-title impact__title mb-3']/text())").get() #team 1 data left side
         team2 = response.xpath("normalize-space(//div[@class='h1 pg-title impact__title mb-3']/text()[2])").get() #team2 data rigt side
+        # team1_flag = response.xpath("(//div[@class='match__overview-lower rounded overflow-hidden']//img)[1]/@src").get()
+        # team2_flag = response.xpath("(//div[@class='match__overview-lower rounded overflow-hidden']//img)[2]/@src").get()
         team1_flag = response.xpath("(//div[@class='match__overview-lower rounded overflow-hidden'])[1]//img/@src").get()
         team2_flag = response.xpath("(//div[@class='match__overview-lower rounded overflow-hidden'])[2]//img/@src").get()
         result_1 = response.xpath("normalize-space((//div[@class='match__overview-lower'])[1]/div/text())").get() #left 
@@ -48,7 +53,7 @@ class UpcomingmSpider(CrawlSpider):
             'game' : "Rainbow Six Siege",
             'competation' : response.xpath("normalize-space(//span[@class='meta__item meta__competition']/a/text())").get(),
             'result': result_1 + ' ' + result_2,
-            'time' : response.xpath("normalize-space(//div[@class='entry__meta']/time/text())").get(),
+            'time' : response.xpath("//div[@class='entry__meta']/time/@datetime").get(),
             'country' : response.xpath("normalize-space(//span[@class='mr-1']/text())").get(),
             'roster' : {
                 team1 : response.xpath("//div[@class='col-12 col-md match__roster team--a']//h5/text()").getall(),
@@ -56,3 +61,25 @@ class UpcomingmSpider(CrawlSpider):
             },
             'photos' : photos
         }
+
+
+# to run spider wihtin script
+# if __name__ == "__main__":
+#     process = CrawlerProcess()
+#     process.crawl(UpcomingmSpider)
+#     process.start()
+    
+
+
+# using sys method to directly run cmdline
+# import sys
+# from scrapy.cmdline import execute
+
+
+# def gen_argv(s):
+#     sys.argv = s.split()
+
+
+# if __name__ == '__main__':
+#     gen_argv('scrapy crawl abc_spider')
+#     execute()
