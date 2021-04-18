@@ -16,7 +16,7 @@ class MatchesSpider(CrawlSpider):
 
     rules = (
         Rule(LinkExtractor(restrict_xpaths="//div[@id='results']/a"), callback='parse_item', follow=True, process_request='set_user_agent'), #for every match
-        # Rule(LinkExtractor(restrict_xpaths="//a[@rel='next']"), process_request='set_user_agent'),    #for next page
+        Rule(LinkExtractor(restrict_xpaths="//a[@rel='next']"), process_request='set_user_agent'),    #for next page
     )
 
     def set_user_agent(self, request):
@@ -37,11 +37,14 @@ class MatchesSpider(CrawlSpider):
         photos = {}
         #stats_cond = response.xpath("normalize-space(//div[@class='alert alert-default small']/text())").get()
         #(//h2[@class = 'mb-0']/following-sibling::node())[2] --  player stats emtpy direct 
-        stats_cond = response.xpath("normalize-space(//div[@class='row row--padded match__player-stats']/div/div/text())").get() # this condition checks in player stasts table for No player stats data string
+
+        # stats_cond = response.xpath("normalize-space(//div[@class='row row--padded match__player-stats']/div/div/text())").get() # this condition checks in player stasts table for No player stats data string
+        stats_cond = response.xpath("normalize-space(//div[@class='alert alert-secondary small']/text())").get() # this condition checks in player stasts table for No player stats data string
         stat_dict = {}
         stat_list = []   #empty string to store every player stats
         if stats_cond != 'No player stats data available.':  #loop to intrate through every player make dict of each
-            for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats js-dt--player-stats js-heatmap  w-100']//tbody/tr"):
+            # for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats js-dt--player-stats js-heatmap  w-100']//tbody/tr"):
+            for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats js-dt--player-stats js-heatmap w-100']//tbody/tr"):
                 player_name = player.xpath("normalize-space((.//td[@class = 'team--a sp__player js-heatmap-ignore']/text())[position() mod 2 != 1 and position() > 1])").get() 
                 dic = {
                     'name' : player_name,
