@@ -54,7 +54,7 @@ class UpcomingmSpider(CrawlSpider):
             'competation' : response.xpath("normalize-space(//span[@class='meta__item meta__competition']/a/text())").get(),
             'result': result_1 + ' ' + result_2,
             'time' : response.xpath("//div[@class='entry__meta']/time/@datetime").get(),
-            'country' : response.xpath("normalize-space(//span[@class='mr-1']/text())").get(),
+            'country' : response.xpath("normalize-space(//span[@class='meta__item match__location']/text())").get(),
             'roster' : {
                 team1 : response.xpath("//div[@class='col-12 col-md match__roster team--a']//h5/text()").getall(),
                 team2 : response.xpath("//div[@class='col-12 col-md match__roster team--b']//h5/text()").getall()

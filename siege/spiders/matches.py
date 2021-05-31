@@ -1,7 +1,7 @@
 import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
-
+from scrapy.http import HtmlResponse
 
 class MatchesSpider(CrawlSpider):
     name = 'matches'
@@ -10,13 +10,14 @@ class MatchesSpider(CrawlSpider):
     user_agent = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Mobile Safari/537.36'
 
     def start_requests(self):
+        # yield scrapy.Request(url='https://siege.gg/matches?tab=results')
         yield scrapy.Request(url='https://siege.gg/matches?tab=results', headers={
         'User-Agent': self.user_agent
         })
 
     rules = (
-        Rule(LinkExtractor(restrict_xpaths="//div[@id='results']/a"), callback='parse_item', follow=True, process_request='set_user_agent'), #for every match
-        Rule(LinkExtractor(restrict_xpaths="//a[@rel='next']"), process_request='set_user_agent'),    #for next page
+        Rule(LinkExtractor(restrict_xpaths="//div[@id='results']/a"), callback='parse_item', follow=True), #for every match
+        # Rule(LinkExtractor(restrict_xpaths="//a[@rel='next']"), process_request='set_user_agent'),    #for next page
     )
 
     def set_user_agent(self, request):
@@ -43,20 +44,40 @@ class MatchesSpider(CrawlSpider):
         stat_dict = {}
         stat_list = []   #empty string to store every player stats
         if stats_cond != 'No player stats data available.':  #loop to intrate through every player make dict of each
+            
+            #NOTE: After updates on DATE:(31-May-2021) player stats table is no longer avaible directly from.
+                # For that i have made lazy patch that should work for now.
+                
+            script_obj = response.xpath("//script")[0].get().split("`")[1]
+            script_resp = HtmlResponse(url="fuck it",body = script_obj,encoding='utf-8')
+            
             # for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats js-dt--player-stats js-heatmap  w-100']//tbody/tr"):
-            for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats js-dt--player-stats js-heatmap w-100']//tbody/tr"):
-                player_name = player.xpath("normalize-space((.//td[@class = 'team--a sp__player js-heatmap-ignore']/text())[position() mod 2 != 1 and position() > 1])").get() 
+            for player in script_resp.xpath("//table//tbody/tr"):
+                # player_name = player.xpath("normalize-space((.//td[@class = 'team--a sp__player js-heatmap-ignore']/text())[position() mod 2 != 1 and position() > 1])").get() 
+                # dic = {
+                #     'name' : player_name,
+                #     'rating': player.xpath("normalize-space(.//td[@class = 'sp__rating js-heatmap-td font-weight-bold']/text())").get(),
+                #     'kd': player.xpath("normalize-space(.//td[@class='sp__kills text-nowrap']/text())").get(),
+                #     'entry': player.xpath("normalize-space(.//td[@class='sp__ok text-nowrap']/text())").get(),
+                #     'kost': player.xpath("normalize-space(.//td[@class='sp__kost js-heatmap-td']/text())").get(),
+                #     'kpr': player.xpath("normalize-space(.//td[@class='sp__kpr js-heatmap-td']/text())").get(),
+                #     'srv': player.xpath("normalize-space(.//td[@class='sp__srv js-heatmap-td']/text())").get(),
+                #     '1vx': player.xpath("normalize-space(.//td[@class='sp__1vx']/text())").get(),
+                #     'plant': player.xpath("normalize-space(.//td[@class='sp__plant']/text())").get(),
+                #     'hs': player.xpath("normalize-space(.//td[@class='sp__hs']/text())").get(),
+                # }
+                player_name = player.xpath('normalize-space((.//td[1]/text())[position() mod 2 != 1 and position() > 1])').get() 
                 dic = {
                     'name' : player_name,
-                    'rating': player.xpath("normalize-space(.//td[@class = 'sp__rating js-heatmap-td font-weight-bold']/text())").get(),
-                    'kd': player.xpath("normalize-space(.//td[@class='sp__kills text-nowrap']/text())").get(),
-                    'entry': player.xpath("normalize-space(.//td[@class='sp__ok text-nowrap']/text())").get(),
-                    'kost': player.xpath("normalize-space(.//td[@class='sp__kost js-heatmap-td']/text())").get(),
-                    'kpr': player.xpath("normalize-space(.//td[@class='sp__kpr js-heatmap-td']/text())").get(),
-                    'srv': player.xpath("normalize-space(.//td[@class='sp__srv js-heatmap-td']/text())").get(),
-                    '1vx': player.xpath("normalize-space(.//td[@class='sp__1vx']/text())").get(),
-                    'plant': player.xpath("normalize-space(.//td[@class='sp__plant']/text())").get(),
-                    'hs': player.xpath("normalize-space(.//td[@class='sp__hs']/text())").get(),
+                    'rating': player.xpath('normalize-space(.//td[2]/text())').get(),
+                    'kd': player.xpath('normalize-space(.//td[3]/text())').get(),
+                    'entry': player.xpath('normalize-space(.//td[4]/text())').get(),
+                    'kost': player.xpath('normalize-space(.//td[5]/text())').get(),
+                    'kpr': player.xpath('normalize-space(.//td[6]/text())').get(),
+                    'srv': player.xpath('normalize-space(.//td[7]/text())').get(),
+                    '1vx': player.xpath('normalize-space(.//td[8]/text())').get(),
+                    'plant': player.xpath('normalize-space(.//td[9]/text())').get(),
+                    'hs': player.xpath('normalize-space(.//td[10]/text())').get(),
                 }
                 #stat_dict.update({player_name:dic}) # it stores stats as key value dict like player name : stats
                 stat_list.append(dic)                #this approch it make a list of players stats dict
