@@ -3,7 +3,7 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 
 from scrapy.crawler import CrawlerProcess
-
+import pycountry as pc
 class UpcomingmSpider(CrawlSpider):
     name = 'upcomingm'
     allowed_domains = ['siege.gg']
@@ -16,7 +16,8 @@ class UpcomingmSpider(CrawlSpider):
         })
 
     rules = (
-        Rule(LinkExtractor(restrict_xpaths="//div[@id='upcoming']/a"), callback='parse_item', follow=True, process_request='set_user_agent'),
+        # Rule(LinkExtractor(restrict_xpaths="//div[@id='upcoming']/a"), callback='parse_item', follow=True, process_request='set_user_agent'),
+        Rule(LinkExtractor(restrict_xpaths="//div[@id='upcoming']/a"), callback='parse_item', follow=True),
     )
 
     def set_user_agent(self, request):
@@ -37,29 +38,45 @@ class UpcomingmSpider(CrawlSpider):
         # roster_a = response.xpath("//div[@class='col-12 col-md match__roster team--a']")
         # roster_b = response.xpath("//div[@class='col-12 col-md match__roster team--b']")
 
-        photo_roster = response.xpath("//div[@class='roster__player']")
+        player_details = []
+        players_roster = response.xpath("//div[@class='roster__player']")
 
-        for player in photo_roster:
-            name = player.xpath("normalize-space(.//h5/text())").get()
+        for player in players_roster:
+            ign = player.xpath("normalize-space(.//h5/text())").get()
+            name = player.xpath("normalize-space(.//small/text()[position() mod 2 != 1 and position() > 1])").get()
             photo = player.xpath(".//img[@class='player__photo__img img-fluid']/@src").get()
-            photos[name] = photo
+            country = player.xpath("(.//img)[2]/@title").get()
+            player_details.append({'ign':ign,'name':name,'photo':photo,'country':country})
+
+        #For Teams Countries
+        team_a_c = response.xpath("(//span[@class='match__flag mx-2'])[1]/img/@title").get().split(' ')[0]
+        team_b_c = response.xpath("(//span[@class='match__flag mx-2'])[2]/img/@title").get().split(' ')[0]
+        try:
+            country_a = pc.countries.get(alpha_2= team_a_c).name
+            country_b = pc.countries.get(alpha_2= team_b_c).name
+        except:
+            country_a = team_a_c
+            country_b = team_b_c
 
         yield{
             'title': team1 + ' vs ' +  team2,
-            'team_a': team1,
-            'team_b': team2,
-            'team_a_flag': team1_flag,
-            'team_b_flag': team2_flag,
+            'url' : response.url,
+            'match_id' : response.url.split('/')[-1].split('-')[0],
+            'team_a': {'name':team1,'country':country_a,'flag':team1_flag},
+            'team_b': {'name':team2,'country':country_b,'flag':team2_flag},
+            # 'country': {'team_a':country_a,'team_b':country_b},
+            # 'team_a_flag': team1_flag,
+            # 'team_b_flag': team2_flag,
             'game' : "Rainbow Six Siege",
             'competation' : response.xpath("normalize-space(//span[@class='meta__item meta__competition']/a/text())").get(),
             'result': result_1 + ' ' + result_2,
             'time' : response.xpath("//div[@class='entry__meta']/time/@datetime").get(),
-            'country' : response.xpath("normalize-space(//span[@class='meta__item match__location']/text())").get(),
+            'location' : response.xpath("normalize-space(//span[@class='meta__item match__location']/text())").get(),
             'roster' : {
-                team1 : response.xpath("//div[@class='col-12 col-md match__roster team--a']//h5/text()").getall(),
-                team2 : response.xpath("//div[@class='col-12 col-md match__roster team--b']//h5/text()").getall()
+                'team_a' : response.xpath("//div[@class='col-12 col-md match__roster team--a']//h5/text()").getall(),
+                'team_b' : response.xpath("//div[@class='col-12 col-md match__roster team--b']//h5/text()").getall()
             },
-            'photos' : photos
+            'player_details' : player_details
         }
 
 
