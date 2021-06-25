@@ -48,12 +48,16 @@ class MatchesSpider(CrawlSpider):
             
             #NOTE: After updates on DATE:(31-May-2021) player stats table is no longer avaible directly from.
                 # For that i have made lazy patch that should work for now.
-                
-            script_obj = response.xpath("//script")[0].get().split("`")[1]
-            script_resp = HtmlResponse(url="fuck it",body = script_obj,encoding='utf-8')
-            
+
+            #*This 2 objects are only used when player stats table in in Scrpit.  
+            # script_obj = response.xpath("//script")[0].get().split("`")[1]
+            # script_resp = HtmlResponse(url="fuck it",body = script_obj,encoding='utf-8')
+             
+            #NOTE: This are some loops that might work  if Base site changes.
             # for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats js-dt--player-stats js-heatmap  w-100']//tbody/tr"):
-            for player in script_resp.xpath("//table//tbody/tr"):
+            for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats js-dt--player-stats js-heatmap w-100']//tbody/tr"):
+            # for player in script_resp.xpath("//table//tbody/tr"):
+                #NOTE: This Object where using HardCode class names which is changed to positions.
                 # player_name = player.xpath("normalize-space((.//td[@class = 'team--a sp__player js-heatmap-ignore']/text())[position() mod 2 != 1 and position() > 1])").get() 
                 # dic = {
                 #     'name' : player_name,
