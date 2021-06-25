@@ -18,6 +18,7 @@ class UpcomingmSpider(CrawlSpider):
     rules = (
         # Rule(LinkExtractor(restrict_xpaths="//div[@id='upcoming']/a"), callback='parse_item', follow=True, process_request='set_user_agent'),
         Rule(LinkExtractor(restrict_xpaths="//div[@id='upcoming']/a"), callback='parse_item', follow=True),
+        # Rule(LinkExtractor(restrict_xpaths="//a[@rel='next']")),
     )
 
     def set_user_agent(self, request):
