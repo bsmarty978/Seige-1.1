@@ -3,6 +3,7 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.http import HtmlResponse
 import pycountry as pc
+from scrapy.exceptions import CloseSpider
 
 class MatchesSpider(CrawlSpider):
     name = 'matches'
