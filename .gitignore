@@ -5,3 +5,8 @@ hh.txt
 raw.html
 .vscode/
 *.json
+build/
+logs/
+project.egg-info/
+dbs/
+eggs/
