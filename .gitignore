@@ -10,3 +10,4 @@ logs/
 project.egg-info/
 dbs/
 eggs/
+*.ipynb
