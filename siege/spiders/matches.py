@@ -115,7 +115,7 @@ class MatchesSpider(CrawlSpider):
         yield{
             'title': team1 + ' vs ' +  team2,
             'url' : response.url,
-            'match_id' : response.url.split('/')[-1].split('-')[0],
+            'match_id' : int(response.url.split('/')[-1].split('-')[0]),
             'title_result': team1 + ' ' + result_1 + ' vs ' + result_2 + ' ' + team2,
             'team_a': {'name':team1,'country':country_a,'flag':team1_flag},
             'team_b': {'name':team2,'country':country_b,'flag':team2_flag},

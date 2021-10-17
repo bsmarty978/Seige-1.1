@@ -65,53 +65,27 @@ class UpcomingMatchPipeline:
 
         elif spider.name == "matches":
             completedCollection = self.db[self.CMcollection_name]
-            if completedCollection.find({"match_id":item["match_id"]}).count()==1:
-                lg.warning(f'[{item["match_id"]}]: Already in collection')
+            match_looup = completedCollection.find({"match_id":item["match_id"]})
+            if match_looup.count()==1:
+                if item["stats"]:
+                    if not match_looup[0]["stats"]:
+                        # match_looup.update_one({"match_id":item["match_id"]},{"$set":{"stats": item["stats"]}})  #NOTE: Updating on by one
+
+                        #NOTE: Updating whole by deleting old and inserting new doc.
+                        completedCollection.delete_one({"match_id":item["match_id"]})
+                        completedCollection.insert(item)
+
+                        lg.warning(f'[{item["match_id"]}]: Stats Updated')
+                        self.Updated_Match += 1
+                    else:
+                        lg.warning(f'[{item["match_id"]}]: Already in collection')
+                else:
+                    lg.warning(f'[{item["match_id"]}]: Already in collection')
+
             else:
                 completedCollection.insert(item)
                 self.New_Completedmatch += 1
             return item
 
         else:
-            return item
-class CompletedMatchPipeline:
-    UPcollection_name = "UpcomingMatches"
-    CMcollection_name = "Matches"
-
-    def __init__(self, mongo_uri):
-        self.mongo_uri = mongo_uri
-        # self.mongo_db = mongo_db
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        return cls(
-            mongo_uri=crawler.settings.get('MONGO_URI')
-            # mongo_db=crawler.settings.get('MONGO_DATABASE', 'items')
-        )
-        
-
-    def open_spider(self, spider):
-        self.client = pymongo.MongoClient(self.mongo_uri)
-        self.db = self.client["SiegeTest"]
-        # lg.warning(f'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[{spider}]')
-        # print(f'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[{spider}]')
-        # try:
-        #     self.db[self.UPcollection_name].drop()
-        # except:
-        #     pass
-
-    def close_spider(self, spider):
-        self.client.close()
-
-    def process_item(self, item, spider):
-
-        try:
-            spiderconditions = item["stats"]
-            return item
-        except KeyError:
-            upcomingCollection = self.db[self.UPcollection_name]
-            if upcomingCollection.find({"match_id":item["match_id"]}).count:
-                lg.warning(f'[{item["match_id"]}]: Already in collection')
-            else:
-                upcomingCollection.insert(item)
             return item
