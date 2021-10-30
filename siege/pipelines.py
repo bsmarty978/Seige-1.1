@@ -17,6 +17,9 @@ class UpcomingMatchPipeline:
     New_UpcomingMatch  = 0
     Updated_Match      = 0 
 
+    ListOfNew = []
+    ListOfUpdated = []
+
 
     def __init__(self, mongo_uri):
         self.mongo_uri = mongo_uri
@@ -50,11 +53,15 @@ class UpcomingMatchPipeline:
         lg.info('--------------------------------------------------------------------------------------')
         lg.info(f'#############[ Upcoming Match : {self.New_UpcomingMatch} ]####################')
         lg.info(f'#############[ Completed Match : {self.New_Completedmatch} ]####################')
+        lg.info(f'{self.ListOfNew}')
         lg.info(f'#############[ Updated Match : {self.Updated_Match} ]####################')
+        lg.info(f'{self.ListOfUpdated}')
         lg.info('--------------------------------------------------------------------------------------')
         self.New_UpcomingMatch  = 0
         self.Updated_Match      = 0 
         self.New_Completedmatch = 0
+        self.ListOfNew = []
+        self.ListOfUpdated = []
 
     def process_item(self, item, spider):
         if spider.name=="upcomingm":
@@ -76,6 +83,8 @@ class UpcomingMatchPipeline:
                         completedCollection.insert(item)
 
                         lg.warning(f'[{item["match_id"]}]: Stats Updated')
+                        self.ListOfUpdated.append(item["match_id"])
+
                         self.Updated_Match += 1
                     else:
                         lg.warning(f'[{item["match_id"]}]: Already in collection')
@@ -85,6 +94,7 @@ class UpcomingMatchPipeline:
             else:
                 completedCollection.insert(item)
                 self.New_Completedmatch += 1
+                self.ListOfNew.append(item["match_id"])
             return item
 
         else:

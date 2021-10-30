@@ -11,3 +11,5 @@ project.egg-info/
 dbs/
 eggs/
 *.ipynb
+*.pdf
+*.csv
