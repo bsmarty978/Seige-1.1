@@ -1,12 +1,11 @@
 import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
-from scrapy.http import HtmlResponse
-import pycountry as pc
-from scrapy.exceptions import CloseSpider
 
-class MatchesSpider(CrawlSpider):
-    name = 'matches'
+import pycountry as pc
+
+class AllmatchesSpider(CrawlSpider):
+    name = 'allmatches'
     allowed_domains = ['siege.gg']
 
     user_agent = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Mobile Safari/537.36'
@@ -19,7 +18,7 @@ class MatchesSpider(CrawlSpider):
 
     rules = (
         Rule(LinkExtractor(restrict_xpaths="//div[@id='results']/a"), callback='parse_item', follow=True), #for every match
-        # Rule(LinkExtractor(restrict_xpaths="//a[@rel='next']")),    #for next page
+        Rule(LinkExtractor(restrict_xpaths="//a[@rel='next']")),    #for next page
     )
 
     def set_user_agent(self, request):
@@ -56,8 +55,8 @@ class MatchesSpider(CrawlSpider):
              
             #NOTE: This are some loops that might work  if Base site changes.
             # for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats js-dt--player-stats js-heatmap  w-100']//tbody/tr"):
-            for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats js-dt--player-stats js-heatmap w-100']//tbody/tr"):
-            # for player in script_resp.xpath("//table//tbody/tr"):
+            for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats  js-dt--player-stats  js-heatmap w-100']//tbody/tr"):
+                # for player in script_resp.xpath("//table//tbody/tr"):
                 #NOTE: This Object where using HardCode class names which is changed to positions.
                 # player_name = player.xpath("normalize-space((.//td[@class = 'team--a sp__player js-heatmap-ignore']/text())[position() mod 2 != 1 and position() > 1])").get() 
                 # dic = {
@@ -72,7 +71,7 @@ class MatchesSpider(CrawlSpider):
                 #     'plant': player.xpath("normalize-space(.//td[@class='sp__plant']/text())").get(),
                 #     'hs': player.xpath("normalize-space(.//td[@class='sp__hs']/text())").get(),
                 # }
-                player_name = player.xpath('normalize-space((.//td[1]/text())[position() mod 2 != 1 and position() > 1])').get() 
+                player_name = player.xpath('normalize-space((.//td[1]/span/text())[position() mod 2 != 1 and position() > 1])').get()                 
                 dic = {
                     'name' : player_name,
                     'rating': player.xpath('normalize-space(.//td[2]/text())').get(),
@@ -115,14 +114,10 @@ class MatchesSpider(CrawlSpider):
         yield{
             'title': team1 + ' vs ' +  team2,
             'url' : response.url,
-            'match_id' : response.url.split('/')[-1].split('-')[0],
+            'match_id' : int(response.url.split('/')[-1].split('-')[0]),
             'title_result': team1 + ' ' + result_1 + ' vs ' + result_2 + ' ' + team2,
             'team_a': {'name':team1,'country':country_a,'flag':team1_flag},
             'team_b': {'name':team2,'country':country_b,'flag':team2_flag},
-            # 'team_b': team2,
-            # 'country': {'team_a':country_a,'team_b':country_b},
-            # 'team_a_flag': team1_flag,
-            # 'team_b_flag': team2_flag,
             'game' : "Rainbow Six Siege",
             'result_a':result_1,
             'result_b':result_2,

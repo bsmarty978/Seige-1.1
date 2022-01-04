@@ -29,12 +29,10 @@ class MatchesSpider(CrawlSpider):
     def parse_item(self, response):
         team1 = response.xpath("normalize-space(//div[@class='h1 pg-title impact__title mb-3']/text())").get() #team 1 data left side
         team2 = response.xpath("normalize-space(//div[@class='h1 pg-title impact__title mb-3']/text()[2])").get() #team2 data rigt side
-        # team1_flag = response.xpath("(//div[@class='match__overview-lower']//img)[1]/@src").get()
-        # team2_flag = response.xpath("(//div[@class='match__overview-lower']//img)[2]/@src").get()
+
         team1_flag = response.xpath("(//div[@class='match__overview-lower rounded overflow-hidden'])[1]//img/@src").get()
         team2_flag = response.xpath("(//div[@class='match__overview-lower rounded overflow-hidden'])[2]//img/@src").get()
-        # result_1 = response.xpath("normalize-space((//div[@class='match__overview-lower'])[1]/div/text())").get() #left 
-        # result_2 = response.xpath("normalize-space((//div[@class='match__overview-lower'])[2]/div/text())").get() #right
+
         result_1 = response.xpath("normalize-space((//div[@class='match__overview-lower rounded overflow-hidden']//div)[1]//text())").get() #left 
         result_2 = response.xpath("normalize-space((//div[@class='match__overview-lower rounded overflow-hidden']//div)[2]//text())").get() #right
         
@@ -56,7 +54,7 @@ class MatchesSpider(CrawlSpider):
              
             #NOTE: This are some loops that might work  if Base site changes.
             # for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats js-dt--player-stats js-heatmap  w-100']//tbody/tr"):
-            for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats js-dt--player-stats js-heatmap w-100']//tbody/tr"):
+            for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats  js-dt--player-stats  js-heatmap w-100']//tbody/tr"):
             # for player in script_resp.xpath("//table//tbody/tr"):
                 #NOTE: This Object where using HardCode class names which is changed to positions.
                 # player_name = player.xpath("normalize-space((.//td[@class = 'team--a sp__player js-heatmap-ignore']/text())[position() mod 2 != 1 and position() > 1])").get() 
@@ -72,7 +70,8 @@ class MatchesSpider(CrawlSpider):
                 #     'plant': player.xpath("normalize-space(.//td[@class='sp__plant']/text())").get(),
                 #     'hs': player.xpath("normalize-space(.//td[@class='sp__hs']/text())").get(),
                 # }
-                player_name = player.xpath('normalize-space((.//td[1]/text())[position() mod 2 != 1 and position() > 1])').get() 
+                
+                player_name = player.xpath('normalize-space((.//td[1]/span/text())[position() mod 2 != 1 and position() > 1])').get() 
                 dic = {
                     'name' : player_name,
                     'rating': player.xpath('normalize-space(.//td[2]/text())').get(),

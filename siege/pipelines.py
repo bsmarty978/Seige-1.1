@@ -45,6 +45,10 @@ class UpcomingMatchPipeline:
                 pass
         elif spider.name == "matches":
             lg.warning(f'----------------------------[ 🕷 Match Result Will be updated 🕷 ]-----------------------------')
+            lg.warning(f'----------------------------[ 🕷           Current            🕷 ]-----------------------------')
+        elif spider.name == "allmatches":
+            lg.warning(f'----------------------------[ 🕷 Match Result Will be updated 🕷 ]-----------------------------')
+            lg.warning(f'----------------------------[ 🕷             All              🕷 ]-----------------------------')
         else:
             lg.warning(f'----------------------------[ 😐 Spider is DEAD 😐 ]------------------------------------------')
 
@@ -70,7 +74,7 @@ class UpcomingMatchPipeline:
             self.New_UpcomingMatch +=1
             return item
 
-        elif spider.name == "matches":
+        elif spider.name in ["matches","allmatches"]:
             completedCollection = self.db[self.CMcollection_name]
             match_looup = completedCollection.find({"match_id":item["match_id"]})
             if match_looup.count()==1:
