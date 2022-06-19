@@ -73,18 +73,60 @@ class AllmatchesSpider(CrawlSpider):
                 #     'hs': player.xpath("normalize-space(.//td[@class='sp__hs']/text())").get(),
                 # }
                 # player_name = player.xpath('normalize-space((.//td[1]/span/text())[position() mod 2 != 1 and position() > 1])').get()                 
-                player_name = player.xpath('normalize-space(.//td[1]/span/a/text())').get()                 
+                player_name = player.xpath('normalize-space(.//td[1]/span/a/text())').get()
+
+                rating =  player.xpath('normalize-space(.//td[2]/text())').get()
+                kd =  player.xpath('normalize-space(.//td[3]/text())').get()
+                entry =  player.xpath('normalize-space(.//td[4]/text())').get()
+                kost =  player.xpath('normalize-space(.//td[5]/text())').get()
+                kpr =  player.xpath('normalize-space(.//td[6]/text())').get()
+                srv =  player.xpath('normalize-space(.//td[7]/text())').get()
+                onevx =  player.xpath('normalize-space(.//td[8]/text())').get()
+                plant =  player.xpath('normalize-space(.//td[9]/text())').get()
+                hs =  player.xpath('normalize-space(.//td[10]/text())').get()
+                
+                rating = float(rating)
+
+                kost = kost.replace("%","").strip()
+                kost = float(kost)
+
+                kpr = float(kpr)
+  
+                srv = srv.replace("%","").strip()
+                srv = float(srv)
+  
+                hs = hs.replace("%","").strip()
+                hs = float(hs)
+
+                onevx = int(onevx)
+
+                plant = int(plant)
+
+                kd = kd.split("(")[0].strip()
+                kill = int(kd.split("-")[0])
+                death = int(kd.split("-")[1])
+                kd = kill-death
+
+                entry = entry.split("(")[0].strip()
+                ekill = int(entry.split("-")[0])
+                edeath = int(entry.split("-")[1])
+                entry = ekill-edeath
+
                 dic = {
                     'ign' : player_name,
-                    'rating': player.xpath('normalize-space(.//td[2]/text())').get(),
-                    'kd': player.xpath('normalize-space(.//td[3]/text())').get(),
-                    'entry': player.xpath('normalize-space(.//td[4]/text())').get(),
-                    'kost': player.xpath('normalize-space(.//td[5]/text())').get(),
-                    'kpr': player.xpath('normalize-space(.//td[6]/text())').get(),
-                    'srv': player.xpath('normalize-space(.//td[7]/text())').get(),
-                    '1vx': player.xpath('normalize-space(.//td[8]/text())').get(),
-                    'plant': player.xpath('normalize-space(.//td[9]/text())').get(),
-                    'hs': player.xpath('normalize-space(.//td[10]/text())').get(),
+                    'rating': rating,
+                    'kd':kd,
+                    'kill':kill,
+                    'death' : death,
+                    'entry': entry,
+                    'ekill':ekill,
+                    'edeath' : edeath,
+                    'kost': kost,
+                    'kpr': kpr,
+                    'srv': srv,
+                    '1vx': onevx,
+                    'plant': plant,
+                    'hs': hs
                 }
                 #stat_dict.update({player_name:dic}) # it stores stats as key value dict like player name : stats
                 stat_list.append(dic)                #this approch it make a list of players stats dict
@@ -111,7 +153,13 @@ class AllmatchesSpider(CrawlSpider):
             country_a = team_a_c
             country_b = team_b_c
 
-
+        #NOTE : match status can be : upcoming, live,completed, completed-stats, completed-no-stats, completed-leaderboard
+        if stat_list==[]:
+            match_status = "completed-no-stats"
+        elif stat_list!=[]:
+            match_status = "completed-stats"
+        else:
+            match_status = "unknown"
         #match meta data and stats combined
         yield{
             'title': team1 + ' vs ' +  team2,
@@ -124,7 +172,7 @@ class AllmatchesSpider(CrawlSpider):
             'result_a':result_1,
             'result_b':result_2,
             'result': result_1 + ' ' + result_2,
-            'competation' : response.xpath("normalize-space(//span[@class='meta__item meta__competition']/a/text())").get(),
+            'competition' : response.xpath("normalize-space(//span[@class='meta__item meta__competition']/a/text())").get(),
             'time' : response.xpath("//div[@class='entry__meta']/time/@datetime").get(),
             'location' : response.xpath("normalize-space(//span[@class='meta__item match__location']/text())").get(),
             'roster' : {
@@ -132,6 +180,8 @@ class AllmatchesSpider(CrawlSpider):
                 'team_b' : response.xpath("(//div[@class='roster roster--row'])[2]//h5/a/text()").getall()
             },
             'stats': stat_list,
-            "player_details" : player_details 
-        }
+            "player_details" : player_details ,
+            'match_status' : match_status,
+            'leaderboard' : []
+        } 
 

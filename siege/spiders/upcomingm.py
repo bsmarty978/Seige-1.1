@@ -62,6 +62,10 @@ class UpcomingmSpider(CrawlSpider):
         except:
             country_a = team_a_c
             country_b = team_b_c
+        
+        stat_list = []    
+        #NOTE : match status can be : upcoming, live,completed, completed-stats, completed-no-stats, completed-leaderboard
+        match_status = "upcoming"
 
         yield{
             'title': team1 + ' vs ' +  team2,
@@ -69,19 +73,21 @@ class UpcomingmSpider(CrawlSpider):
             'match_id' : int(response.url.split('/')[-1].split('-')[0]),
             'team_a': {'name':team1,'country':country_a,'flag':team1_flag},
             'team_b': {'name':team2,'country':country_b,'flag':team2_flag},
-            # 'country': {'team_a':country_a,'team_b':country_b},
-            # 'team_a_flag': team1_flag,
-            # 'team_b_flag': team2_flag,
             'game' : "Rainbow Six Siege",
-            'competation' : response.xpath("normalize-space(//span[@class='meta__item meta__competition']/a/text())").get(),
+            'result_a':result_1,
+            'result_b':result_2,
             'result': result_1 + ' ' + result_2,
+            'competition' : response.xpath("normalize-space(//span[@class='meta__item meta__competition']/a/text())").get(),
             'time' : response.xpath("//div[@class='entry__meta']/time/@datetime").get(),
             'location' : response.xpath("normalize-space(//span[@class='meta__item match__location']/text())").get(),
             'roster' : {
                 'team_a' : response.xpath("(//div[@class='roster roster--row'])[1]//h5/a/text()").getall(),
                 'team_b' : response.xpath("(//div[@class='roster roster--row'])[2]//h5/a/text()").getall()
             },
-            'player_details' : player_details
+            'stats': [],
+            'player_details' : player_details,            
+            'match_status' : match_status,
+            'leaderboard' : []
         }
 
 

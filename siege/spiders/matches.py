@@ -1,9 +1,8 @@
 import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
-from scrapy.http import HtmlResponse
+
 import pycountry as pc
-from scrapy.exceptions import CloseSpider
 
 class MatchesSpider(CrawlSpider):
     name = 'matches'
@@ -27,15 +26,18 @@ class MatchesSpider(CrawlSpider):
         return request
 
     def parse_item(self, response):
-        team1 = response.xpath("normalize-space(//div[@class='h1 pg-title impact__title mb-3']/text())").get() #team 1 data left side
-        team2 = response.xpath("normalize-space(//div[@class='h1 pg-title impact__title mb-3']/text()[2])").get() #team2 data rigt side
-
-        team1_flag = response.xpath("(//div[@class='match__overview-lower rounded overflow-hidden'])[1]//img/@src").get()
-        team2_flag = response.xpath("(//div[@class='match__overview-lower rounded overflow-hidden'])[2]//img/@src").get()
-
-        result_1 = response.xpath("normalize-space((//div[@class='match__overview-lower rounded overflow-hidden']//div)[1]//text())").get() #left 
-        result_2 = response.xpath("normalize-space((//div[@class='match__overview-lower rounded overflow-hidden']//div)[2]//text())").get() #right
-        
+        team1 = response.xpath("normalize-space(((//span[@class='match__name']/text())[1]))").get() #team 1 data left side
+        team2 = response.xpath("normalize-space(((//span[@class='match__name']/text())[2]))").get() #team2 data rigt side
+        # team1_flag = response.xpath("(//div[@class='match__overview-lower']//img)[1]/@src").get()
+        # team2_flag = response.xpath("(//div[@class='match__overview-lower']//img)[2]/@src").get()
+        team1_flag = response.xpath("(//img[@class='match__logo__img img-fluid'])[1]/@src").get()
+        team2_flag = response.xpath("(//img[@class='match__logo__img img-fluid'])[1]/@src").get()
+        result_1 = response.xpath("normalize-space((//div[@class='match__overview-lower rounded overflow-hidden'])[1]/div/text())").get() #left 
+        result_2 = response.xpath("normalize-space((//div[@class='match__overview-lower rounded overflow-hidden'])[2]/div/text())").get() #right
+        if result_1=="-":
+            result_1="NA"
+        if result_2=="-":
+            result_2="NA"
         #stats_cond = response.xpath("normalize-space(//div[@class='alert alert-default small']/text())").get()
         #(//h2[@class = 'mb-0']/following-sibling::node())[2] --  player stats emtpy direct 
 
@@ -55,7 +57,7 @@ class MatchesSpider(CrawlSpider):
             #NOTE: This are some loops that might work  if Base site changes.
             # for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats js-dt--player-stats js-heatmap  w-100']//tbody/tr"):
             for player in response.xpath("//table[@class = 'table table-sm table-hover table--stats table--player-stats  js-dt--player-stats  js-heatmap w-100']//tbody/tr"):
-            # for player in script_resp.xpath("//table//tbody/tr"):
+                # for player in script_resp.xpath("//table//tbody/tr"):
                 #NOTE: This Object where using HardCode class names which is changed to positions.
                 # player_name = player.xpath("normalize-space((.//td[@class = 'team--a sp__player js-heatmap-ignore']/text())[position() mod 2 != 1 and position() > 1])").get() 
                 # dic = {
@@ -70,19 +72,61 @@ class MatchesSpider(CrawlSpider):
                 #     'plant': player.xpath("normalize-space(.//td[@class='sp__plant']/text())").get(),
                 #     'hs': player.xpath("normalize-space(.//td[@class='sp__hs']/text())").get(),
                 # }
+                # player_name = player.xpath('normalize-space((.//td[1]/span/text())[position() mod 2 != 1 and position() > 1])').get()                 
+                player_name = player.xpath('normalize-space(.//td[1]/span/a/text())').get()
+
+                rating =  player.xpath('normalize-space(.//td[2]/text())').get()
+                kd =  player.xpath('normalize-space(.//td[3]/text())').get()
+                entry =  player.xpath('normalize-space(.//td[4]/text())').get()
+                kost =  player.xpath('normalize-space(.//td[5]/text())').get()
+                kpr =  player.xpath('normalize-space(.//td[6]/text())').get()
+                srv =  player.xpath('normalize-space(.//td[7]/text())').get()
+                onevx =  player.xpath('normalize-space(.//td[8]/text())').get()
+                plant =  player.xpath('normalize-space(.//td[9]/text())').get()
+                hs =  player.xpath('normalize-space(.//td[10]/text())').get()
                 
-                player_name = player.xpath('normalize-space((.//td[1]/span/text())[position() mod 2 != 1 and position() > 1])').get() 
+                rating = float(rating)
+
+                kost = kost.replace("%","").strip()
+                kost = float(kost)
+
+                kpr = float(kpr)
+  
+                srv = srv.replace("%","").strip()
+                srv = float(srv)
+  
+                hs = hs.replace("%","").strip()
+                hs = float(hs)
+
+                onevx = int(onevx)
+
+                plant = int(plant)
+
+                kd = kd.split("(")[0].strip()
+                kill = int(kd.split("-")[0])
+                death = int(kd.split("-")[1])
+                kd = kill-death
+
+                entry = entry.split("(")[0].strip()
+                ekill = int(entry.split("-")[0])
+                edeath = int(entry.split("-")[1])
+                entry = ekill-edeath
+
                 dic = {
-                    'name' : player_name,
-                    'rating': player.xpath('normalize-space(.//td[2]/text())').get(),
-                    'kd': player.xpath('normalize-space(.//td[3]/text())').get(),
-                    'entry': player.xpath('normalize-space(.//td[4]/text())').get(),
-                    'kost': player.xpath('normalize-space(.//td[5]/text())').get(),
-                    'kpr': player.xpath('normalize-space(.//td[6]/text())').get(),
-                    'srv': player.xpath('normalize-space(.//td[7]/text())').get(),
-                    '1vx': player.xpath('normalize-space(.//td[8]/text())').get(),
-                    'plant': player.xpath('normalize-space(.//td[9]/text())').get(),
-                    'hs': player.xpath('normalize-space(.//td[10]/text())').get(),
+                    'ign' : player_name,
+                    'rating': rating,
+                    'kd':kd,
+                    'kill':kill,
+                    'death' : death,
+                    'entry': entry,
+                    'ekill':ekill,
+                    'edeath' : edeath,
+                    'kost': kost,
+                    'kpr': kpr,
+                    'srv': srv,
+                    '1vx': onevx,
+                    'plant': plant,
+                    'hs': hs
                 }
                 #stat_dict.update({player_name:dic}) # it stores stats as key value dict like player name : stats
                 stat_list.append(dic)                #this approch it make a list of players stats dict
@@ -93,10 +137,10 @@ class MatchesSpider(CrawlSpider):
         players_roster = response.xpath("//div[@class='roster__player']")
 
         for player in players_roster:
-            ign = player.xpath("normalize-space(.//h5/text())").get()
+            ign = player.xpath("normalize-space(.//h5/a/text())").get()
             name = player.xpath("normalize-space(.//small/text()[position() mod 2 != 1 and position() > 1])").get()
-            photo = player.xpath(".//img[@class='player__photo__img img-fluid']/@src").get()
-            country = player.xpath("(.//img)[2]/@title").get()
+            photo = player.xpath(".//div[@class='player__photo']/img/@src").get()
+            country = player.xpath(".//small/img/@title").get()
             player_details.append({'ign':ign,'name':name,'photo':photo,'country':country})
 
         #For Teams Countries
@@ -109,7 +153,13 @@ class MatchesSpider(CrawlSpider):
             country_a = team_a_c
             country_b = team_b_c
 
-
+        #NOTE : match status can be : upcoming, live,completed, completed-stats, completed-no-stats, completed-leaderboard
+        if stat_list==[]:
+            match_status = "completed-no-stats"
+        elif stat_list!=[]:
+            match_status = "completed-stats"
+        else:
+            match_status = "unknown"
         #match meta data and stats combined
         yield{
             'title': team1 + ' vs ' +  team2,
@@ -126,10 +176,12 @@ class MatchesSpider(CrawlSpider):
             'time' : response.xpath("//div[@class='entry__meta']/time/@datetime").get(),
             'location' : response.xpath("normalize-space(//span[@class='meta__item match__location']/text())").get(),
             'roster' : {
-                'team_a' : response.xpath("//div[@class='col-12 col-md match__roster team--a']//h5/text()").getall(),
-                'team_b' : response.xpath("//div[@class='col-12 col-md match__roster team--b']//h5/text()").getall()
+                'team_a' : response.xpath("(//div[@class='roster roster--row'])[1]//h5/a/text()").getall(),
+                'team_b' : response.xpath("(//div[@class='roster roster--row'])[2]//h5/a/text()").getall()
             },
             'stats': stat_list,
-            "player_details" : player_details 
-        }
+            "player_details" : player_details ,
+            'match_status' : match_status,
+            'leaderboard' : []
+        } 
 

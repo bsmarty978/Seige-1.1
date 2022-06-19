@@ -63,10 +63,11 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   # 'siege.pipelines.UpcomingMatchPipeline': 300,
+   'siege.pipelines.UpcomingMatchPipeline': 300,
 #    'siege.pipelines.CompletedMatchPipeline': 300,
 }
-MONGO_URI = "mongodb+srv://nameless_gambit:smtG886611@cluster0.zjdqc.mongodb.net/R6SDB?retryWrites=true&w=majority"
+# MONGO_URI = "mongodb+srv://nameless_gambit:smtG886611@cluster0.zjdqc.mongodb.net/R6SDB?retryWrites=true&w=majority"
+MONGO_URI = "mongodb+srv://nameless_gambit:smtG886611@cluster0.zjdqc.mongodb.net/?retryWrites=true&w=majority"
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

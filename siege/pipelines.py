@@ -11,7 +11,7 @@ import logging as lg
 
 class UpcomingMatchPipeline:
     UPcollection_name = "UpcomingMatches"
-    CMcollection_name = "Matches"
+    CMcollection_name = "AllMatches"
 
     New_Completedmatch = 0
     New_UpcomingMatch  = 0
