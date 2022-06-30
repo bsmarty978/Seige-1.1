@@ -72,6 +72,7 @@ class UpcomingMatchPipeline:
             upcomingCollection = self.db[self.UPcollection_name]
             upcomingCollection.insert(item)
             self.New_UpcomingMatch +=1
+            del item["_id"]
             return item
 
         elif spider.name in ["matches","allmatches"]:
@@ -99,7 +100,9 @@ class UpcomingMatchPipeline:
                 completedCollection.insert(item)
                 self.New_Completedmatch += 1
                 self.ListOfNew.append(item["match_id"])
+            del item["_id"]
             return item
 
         else:
+            del item["_id"]
             return item
