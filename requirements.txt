@@ -31,4 +31,5 @@ PyDispatcher==2.0.5
 pyOpenSSL==22.0.0
 queuelib==1.6.2
 requests==2.27.1
+pycountry
 requests-file==1.5.1
