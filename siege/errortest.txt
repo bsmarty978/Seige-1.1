@@ -1,2 +1,0 @@
-2021-06-02 20:03:48 [scrapy.downloadermiddlewares.retry] ERROR: Gave up retrying <GET https://siege.gg/matches/1067-invitational-eu-team-vitality-vs-forze> (failed 3 times): 500 Internal Server Error
-2021-06-02 20:03:59 [scrapy.downloadermiddlewares.retry] ERROR: Gave up retrying <GET https://siege.gg/matches/1059-invitational-na-darkzero-esports-vs-92-dream-team> (failed 3 times): 500 Internal Server Error
