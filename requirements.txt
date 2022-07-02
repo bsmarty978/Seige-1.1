@@ -1,2 +1,6 @@
 pycountry
 scrapy
+herokuify-scrapyd
+pymongo
+dnspython
+scrapyd-client==1.2.2
