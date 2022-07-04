@@ -100,9 +100,15 @@ class UpcomingMatchPipeline:
                 completedCollection.insert(item)
                 self.New_Completedmatch += 1
                 self.ListOfNew.append(item["match_id"])
-            del item["_id"]
+            try:
+                del item["_id"]
+            except:
+                pass
             return item
 
         else:
-            del item["_id"]
+            try:
+                del item["_id"]
+            except:
+                pass
             return item
