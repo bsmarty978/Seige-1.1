@@ -31,7 +31,7 @@ class UpcomingmSpider(CrawlSpider):
         # team1_flag = response.xpath("(//div[@class='match__overview-lower rounded overflow-hidden']//img)[1]/@src").get()
         # team2_flag = response.xpath("(//div[@class='match__overview-lower rounded overflow-hidden']//img)[2]/@src").get()
         team1_flag = response.xpath("(//img[@class='match__logo__img img-fluid'])[1]/@src").get()
-        team2_flag = response.xpath("(//img[@class='match__logo__img img-fluid'])[1]/@src").get()
+        team2_flag = response.xpath("(//img[@class='match__logo__img img-fluid'])[2]/@src").get()
         result_1 = response.xpath("normalize-space((//div[@class='match__overview-lower rounded overflow-hidden'])[1]/div/text())").get() #left 
         result_2 = response.xpath("normalize-space((//div[@class='match__overview-lower rounded overflow-hidden'])[2]/div/text())").get() #right
         if result_1=="-":
