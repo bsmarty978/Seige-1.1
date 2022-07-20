@@ -176,8 +176,8 @@ class AllmatchesSpider(CrawlSpider):
             'time' : response.xpath("//div[@class='entry__meta']/time/@datetime").get(),
             'location' : response.xpath("normalize-space(//span[@class='meta__item match__location']/text())").get(),
             'roster' : {
-                'team_a' : response.xpath("(//div[@class='roster roster--row'])[1]//h5/a/text()").getall(),
-                'team_b' : response.xpath("(//div[@class='roster roster--row'])[2]//h5/a/text()").getall()
+                'roster_a' : response.xpath("(//div[@class='roster roster--row'])[1]//h5/a/text()").getall(),
+                'roster_b' : response.xpath("(//div[@class='roster roster--row'])[2]//h5/a/text()").getall()
             },
             'stats': stat_list,
             "player_details" : player_details ,
